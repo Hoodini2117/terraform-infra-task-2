@@ -6,7 +6,7 @@ variables:
     value: $(TF_VAR_admin_password)
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Agent_hoodini'
 
 stages:
 - stage: PrepareAndPlan
