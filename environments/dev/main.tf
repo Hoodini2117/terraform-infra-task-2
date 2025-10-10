@@ -20,20 +20,6 @@ module "nginx_app" {
   source      = "../../modules/nginx"
   environment = "dev"
 }
-ssl_certificate {
-    name = "pfx-cert"                         
-    # For quick testing: embed base64 PFX
-    data = base64encode(file("${path.module}/certs/site-cert.pfx"))
-    password = var.cert_pfx_password
-}
-http_listener {
-    name                           = "https-listener"
-    frontend_ip_configuration_name = "publicIp"
-    frontend_port_name             = "frontendPortHttps"
-    protocol                       = "Https"
-    ssl_certificate_name           = "pfx-cert"
-    host_name                      = "www.example.com"
-}
 module "compute" {
   source              = "../../modules/compute"
   environment         = "dev"
@@ -56,5 +42,6 @@ module "loadbalancer" {
   backend_ip_addresses = module.compute.private_ips
 
 }
+
 
 
