@@ -50,6 +50,26 @@ stages:
         script: |
           terraform plan -var="admin_password=$(adminPassword)" -out=tfplan
         workingDirectory: 'environments/dev'
+    - task: CmdLine@2
+      displayName: 'Terraform Plan'
+      inputs:
+        script: |
+          terraform plan -var="admin_password=$(adminPassword)" -out=tfplan
+        workingDirectory: 'environments/dev'
+
+    - task: CmdLine@2
+      displayName: 'List Files for Debugging'
+      inputs:
+        script: |
+          echo "Listing files in the working directory before publishing:"
+          ls -lR $(System.DefaultWorkingDirectory)/environments/dev
+        workingDirectory: 'environments/dev'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Terraform Artifacts'
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/environments/dev'
+        artifactName: 'terraform-plan-artifacts'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Terraform Artifacts'
