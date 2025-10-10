@@ -29,7 +29,6 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           echo "Azure credentials sourced successfully."
-          # az account set --subscription $(AzureSubscriptionId)
 
     - task: CmdLine@2
       displayName: 'Terraform Init'
@@ -51,18 +50,19 @@ stages:
         script: |
           terraform plan -var="admin_password=$(adminPassword)" -out=tfplan
         workingDirectory: 'environments/dev'
+
     - task: PublishPipelineArtifact@1
-      displayName: 'Publish Terraform Plan'
+      displayName: 'Publish Terraform Artifacts'
       inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/environments/dev/tfplan'
-        artifactName: 'tfplan'
+        targetPath: '$(System.DefaultWorkingDirectory)/environments/dev'
+        artifactName: 'terraform-plan-artifacts'
 
 - stage: DeploymentApproval
   displayName: 'Manual Review'
   jobs:
   - deployment: Review
     displayName: 'Deployment Approval'
-    environment: 'ProdEnvironment'
+    environment: 'ProdEnvironment' # Ensure you have created an environment with this name
     strategy:
       runOnce:
         deploy:
@@ -81,10 +81,10 @@ stages:
     steps:
     
     - task: DownloadPipelineArtifact@2
-      displayName: 'Download Terraform Plan'
+      displayName: 'Download Terraform Artifacts'
       inputs:
-        artifactName: 'tfplan'
-        downloadPath: '$(System.DefaultWorkingDirectory)/environments/dev'
+        artifactName: 'terraform-plan-artifacts'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
 
     - task: AzureCLI@2
       displayName: 'Azure Re-Login'
@@ -105,7 +105,7 @@ stages:
       inputs:
         script: |
           terraform apply -auto-approve tfplan
-        workingDirectory: 'environments/dev'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-plan-artifacts/environments/dev'
 
     - task: CmdLine@2
       displayName: 'Output Deployment Details'
@@ -113,4 +113,4 @@ stages:
         script: |
           terraform output -json > output.json
           cat output.json
-        workingDirectory: 'environments/dev'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform-plan-artifacts/environments/dev'
