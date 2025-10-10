@@ -24,7 +24,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Azure Login (Implicit)'
       inputs:
-        azureSubscription: 'meowmeow'
+        azureSubscription: 'hoodini_secure'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -78,7 +78,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Azure Re-Login'
       inputs:
-        azureSubscription: 'meowmeow'
+        azureSubscription: 'hoodini_secure'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
