@@ -51,6 +51,11 @@ stages:
         script: |
           terraform plan -var="admin_password=$(adminPassword)" -out=tfplan
         workingDirectory: 'environments/dev'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Terraform Plan'
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/environments/dev/tfplan'
+        artifactName: 'tfplan'
 
 - stage: DeploymentApproval
   displayName: 'Manual Review'
@@ -75,6 +80,12 @@ stages:
     displayName: 'Terraform Apply'
     steps:
     
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Terraform Plan'
+      inputs:
+        artifactName: 'tfplan'
+        downloadPath: '$(System.DefaultWorkingDirectory)/environments/dev'
+
     - task: AzureCLI@2
       displayName: 'Azure Re-Login'
       inputs:
