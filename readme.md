@@ -51,5 +51,12 @@ To function, the pipeline requires some initial setup in Azure DevOps, including
 <img width="1224" height="865" alt="Screenshot_20251011_003756" src="https://github.com/user-attachments/assets/b6289407-c1b8-4e10-9659-d2aa2ad6bd40" />
 <img width="393" height="698" alt="image" src="https://github.com/user-attachments/assets/a1d861b7-ebd9-48a7-9ee9-b6979eeec4ed" />
 
+## jenkins pipeline to implement this infrastructure
+This Jenkinsfile defines a declarative pipeline that automates the process of deploying infrastructure to Microsoft Azure using Terraform. The pipeline is designed to run on any available Jenkins agent and begins by securely loading an Azure Service Principal and a Terraform admin password from the Jenkins credential store. These secrets are loaded into the build's environment, ensuring they are never exposed in the logs or the code itself.
+The workflow executes in sequential stages. The first stage, 'Azure Login', uses the loaded credentials to authenticate with the Azure CLI, establishing a secure session for the subsequent steps. Once authenticated, the pipeline proceeds to the 'Terraform Init and Plan' stage. It navigates into the environments/dev directory, runs terraform init to prepare the workspace, and then executes terraform plan. This generates a preview of the proposed infrastructure changes and saves them to a file named tfplan, ensuring a predictable outcome.
+For safety, the final 'Terraform Apply' stage is conditional and does not run by default. It is controlled by a build parameter named APPLY_CHANGES. A user must manually trigger the pipeline and check this boolean parameter to true, which acts as a manual approval gate. If approved, this stage runs terraform apply on the saved tfplan file, executing the exact changes that were previously planned. Finally, a post action ensures the workspace is cleaned after every run, maintaining a tidy environment for the next execution.
 
+<img width="1794" height="936" alt="image" src="https://github.com/user-attachments/assets/b7ec3351-09c1-436e-bdfa-99c525ab98c9" />
+
+<img width="1794" height="936" alt="image" src="https://github.com/user-attachments/assets/70c25512-96b6-4438-955b-8d98df57fed6" />
 
