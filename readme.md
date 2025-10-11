@@ -45,6 +45,7 @@ Enforce consistent infrastructure standards and naming conventions.
 Manage environment-specific configurations cleanly through variable inputs.
 
 This structure not only keeps the Terraform configuration organized and scalable but also supports seamless CI/CD integration, enabling automated deployment pipelines to plan and apply changes independently for each environment.
+
 <img width="284" height="856" alt="Screenshot_20251011_000754" src="https://github.com/user-attachments/assets/552517db-1e6f-4918-8e54-cdbb609a9136" />
 <img width="1251" height="871" alt="Screenshot_20251010_230132" src="https://github.com/user-attachments/assets/46d375dd-3e76-4bce-9ea4-2e120b0816e1" />
 <img width="1419" height="646" alt="Screenshot_20251010_230218" src="https://github.com/user-attachments/assets/e7816837-ff4e-4089-9e12-58874f7d5eae" />
