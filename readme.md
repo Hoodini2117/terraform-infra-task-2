@@ -1,41 +1,50 @@
 # AZURE PIPELINE
-Compute Module
+Modules
 
-The compute module manages the compute layer of the infrastructure.
-It provisions virtual machines or instances, attaches security groups, and manages instance profiles or IAM roles when required.
-This module typically depends on the networking module to receive subnet and VPC details.
+This project adopts a modular Terraform architecture, where each major infrastructure component is defined as an independent, reusable module. The goal of this design is to ensure scalability, consistency, and maintainability across multiple environments such as development and production.
+Each module contains its own configuration logic, input variables, and outputs, allowing components to be easily managed, reused, and integrated with one another.
 
-Includes:
-Instance definitions and configuration
-Security group associations
-Optional startup or provisioning scripts
-Load Balancer Module
-The loadbalancer module is responsible for setting up and configuring the application or network load balancer.
-It creates target groups, listener rules, and health checks to distribute traffic across compute instances.
+1. Compute Module
 
-Includes:
-Load balancer and listener configuration
-Target group registration
-Health checks and routing rules
-Networking Module
-The networking module defines the foundational networking layer used by all other components.
-It sets up the VPC (or Virtual Network), subnets, routing tables, and related networking infrastructure.
-This is generally the first module to be applied since other modules depend on its outputs.
+The Compute module is responsible for provisioning and managing virtual machine instances. It defines the essential compute resources — such as EC2 instances or virtual machines — along with their configurations, including instance types, image IDs, and subnet associations.
+It outputs key details like instance IDs and public IPs, which are often referenced by other modules. Typical resources in this module include instance creation, security group association, and user data scripts for initialization and configuration.
 
-Includes:
-VPC or Virtual Network creation
-Public and private subnets
-Internet Gateway and route tables
-Network security groups
-Nginx Module
-The nginx module handles the configuration and deployment of an Nginx web or reverse proxy server.
-It may use the compute and load balancer outputs to configure routing or serve content.
+2. Load Balancer Module
 
-Includes:
-Nginx installation and configuration
-Reverse proxy or static site setup
+The Load Balancer module handles the provisioning and configuration of load balancers that distribute incoming traffic across multiple compute instances. It defines the load balancer, listeners, and target groups to achieve efficient traffic management and high availability.
+This module may also manage related security groups and routing rules. Common outputs include the load balancer’s DNS name and ARN, which can be utilized by networking or application modules.
 
-Optional user_data.sh provisioning script
+3. Networking Module
+
+The Networking module provides the foundational infrastructure layer for the entire environment. It defines and manages core network components such as VPCs (or virtual networks), subnets, route tables, and internet gateways.
+This module establishes the networking framework that other modules — such as compute and load balancer — depend upon. Its outputs typically include VPC IDs, subnet IDs, and route table references, which are shared with other modules to ensure seamless connectivity within the infrastructure.
+
+4. Nginx Module
+
+The Nginx module automates the deployment and configuration of Nginx on provisioned compute instances. It includes startup scripts for installation, configuration, and serving of static content or application endpoints.
+This module can also be extended to manage load balancing, caching, and SSL termination for web-based workloads. It is often used alongside the compute and load balancer modules to deliver a complete and functional web-serving layer.
+
+Environment Structure
+
+Each environment, such as dev and prod, consumes these modules to build infrastructure specific to that stage.
+Every environment directory contains its own main.tf, variables.tf, and outputs.tf files that define how modules are instantiated and which variable values are used. This separation ensures that environments are managed independently, preventing unwanted interference between them.
+
+For example, the development environment might use smaller compute instances and limited subnets for cost efficiency, whereas the production environment can leverage larger instances, multiple load balancers, and high-availability configurations.
+Each environment maintains its own Terraform state file, ensuring clear isolation and simplifying state management.
+
+Purpose of Modular Design
+
+The modular approach significantly enhances the flexibility and maintainability of the Terraform codebase. It allows teams to:
+
+Reuse the same set of modules across multiple environments.
+
+Simplify updates by maintaining shared logic in a single place.
+
+Enforce consistent infrastructure standards and naming conventions.
+
+Manage environment-specific configurations cleanly through variable inputs.
+
+This structure not only keeps the Terraform configuration organized and scalable but also supports seamless CI/CD integration, enabling automated deployment pipelines to plan and apply changes independently for each environment.
 <img width="284" height="856" alt="Screenshot_20251011_000754" src="https://github.com/user-attachments/assets/552517db-1e6f-4918-8e54-cdbb609a9136" />
 <img width="1251" height="871" alt="Screenshot_20251010_230132" src="https://github.com/user-attachments/assets/46d375dd-3e76-4bce-9ea4-2e120b0816e1" />
 <img width="1419" height="646" alt="Screenshot_20251010_230218" src="https://github.com/user-attachments/assets/e7816837-ff4e-4089-9e12-58874f7d5eae" />
